@@ -1,0 +1,1 @@
+pharmacyservice-a6acf2bebehsgcfc.canadacentral-01.azurewebsites.net
