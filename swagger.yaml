@@ -1,0 +1,278 @@
+openapi: 3.0.0
+info:
+  title: Pharmacy Service API
+  version: 1.0.2
+  description: API documentation for the Pharmacy Service
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Development server
+
+paths:
+  /auth/register:
+    post:
+      summary: Register a new pharmacy
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+                - name
+              properties:
+                username:
+                  type: string
+                  example: pharmacy_001
+                password:
+                  type: string
+                  example: secure_password
+                name:
+                  type: string
+                  example: Pharmacy ABC
+      responses:
+        '201':
+          description: Pharmacy registered successfully
+        '400':
+          description: Pharmacy already exists
+        '500':
+          description: Error registering pharmacy
+
+  /auth/login:
+    post:
+      summary: Login a pharmacy
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  example: pharmacy_001
+                password:
+                  type: string
+                  example: secure_password
+      responses:
+        '200':
+          description: Pharmacy logged in successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+        '404':
+          description: Pharmacy not found
+        '401':
+          description: Invalid credentials
+        '500':
+          description: Error logging in
+
+  /pharmacy/prescriptions/pending:
+    get:
+      summary: Get all pending prescriptions
+      tags:
+        - Pharmacy
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of pending prescriptions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Prescription'
+        '500':
+          description: Error fetching prescriptions
+
+  /pharmacy/prescriptions/{prescriptionId}:
+    patch:
+      summary: Submit a prescription with partial completion
+      tags:
+        - Pharmacy
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: prescriptionId
+          in: path
+          required: true
+          description: The ID of the prescription
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                medicines:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        example: Aspirin
+                      quantity:
+                        type: integer
+                        example: 2
+                missingMedicines:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        example: Voltaren
+      responses:
+        '200':
+          description: Prescription updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prescription'
+        '404':
+          description: Prescription not found
+        '500':
+          description: Error submitting prescription
+
+  /pharmacy/prescriptions/incomplete:
+    get:
+      summary: Get all incomplete prescriptions for the logged-in pharmacy
+      tags:
+        - Pharmacy
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of incomplete prescriptions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Prescription'
+        '500':
+          description: Error fetching incomplete prescriptions
+
+  /pharmacy/prescriptions/{prescriptionId}/complete:
+    patch:
+      summary: Mark a prescription as complete
+      tags:
+        - Pharmacy
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: prescriptionId
+          in: path
+          required: true
+          description: The ID of the prescription
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Prescription marked as complete successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prescription'
+        '404':
+          description: Prescription not found
+        '500':
+          description: Error completing the prescription
+  /pharmacy/prescriptions/search/{tcId}:
+    get:
+      summary: Search prescriptions by TC ID
+      tags:
+        - Pharmacy
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: tcId
+          in: path
+          required: true
+          description: The TC ID of the patient
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of prescriptions for the given TC ID
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Prescription'
+        '404':
+          description: No prescriptions found for the given TC ID
+        '500':
+          description: Error searching prescriptions by TC ID
+
+components:
+  schemas:
+    Prescription:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 64a7f2e50935712345678abc
+        tcId:
+          type: string
+          example: 12345678901
+        doctorId:
+          type: string
+          example: 64a7f1c20935712345678xyz
+        pharmacyId:
+          type: string
+          example: 64a7f2e50935712345678pharm
+        medicines:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                example: Aspirin
+              quantity:
+                type: integer
+                example: 1
+        status:
+          type: string
+          enum: ['Pending', 'Incomplete', 'Completed']
+          example: Completed
+        missingMedicines:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                example: Voltaren
+        createdAt:
+          type: string
+          format: date-time
+          example: 2025-01-24T12:00:00Z
+        updatedAt:
+          type: string
+          format: date-time
+          example: 2025-01-25T12:00:00Z
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
