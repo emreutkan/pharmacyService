@@ -80,7 +80,7 @@ paths:
         '500':
           description: Error logging in
 
-  /pharmacy/prescriptions/pending:
+  /prescriptions/pending:
     get:
       summary: Get all pending prescriptions
       tags:
@@ -99,7 +99,7 @@ paths:
         '500':
           description: Error fetching prescriptions
 
-  /pharmacy/prescriptions/{prescriptionId}:
+  /prescriptions/{prescriptionId}:
     patch:
       summary: Submit a prescription with partial completion
       tags:
@@ -151,7 +151,7 @@ paths:
         '500':
           description: Error submitting prescription
 
-  /pharmacy/prescriptions/incomplete:
+  /prescriptions/incomplete:
     get:
       summary: Get all incomplete prescriptions for the logged-in pharmacy
       tags:
@@ -170,7 +170,7 @@ paths:
         '500':
           description: Error fetching incomplete prescriptions
 
-  /pharmacy/prescriptions/{prescriptionId}/complete:
+  /prescriptions/{prescriptionId}/complete:
     patch:
       summary: Mark a prescription as complete
       tags:
@@ -195,7 +195,7 @@ paths:
           description: Prescription not found
         '500':
           description: Error completing the prescription
-  /pharmacy/prescriptions/search/{tcId}:
+  /prescriptions/search/{tcId}:
     get:
       summary: Search prescriptions by TC ID
       tags:
