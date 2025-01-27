@@ -9,7 +9,6 @@ require('path');
 dotenv.config();
 
 const authRoutes = require('./routes/v1/authRoutes');
-const pharmacyRoutes = require('./routes/v1/pharmacyRoutes');
 const {serve, setup} = require("swagger-ui-express");
 const {join} = require("node:path");
 
@@ -29,7 +28,6 @@ mongoose.connect(MONGO_URI)
     .catch(err => console.error('MongoDB connection error:', err));
 
 app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1', pharmacyRoutes);
 
 app.get('/', (req, res) => res.send('Pharmacy Service is running'));
 
