@@ -20,15 +20,17 @@ paths:
             schema:
               type: object
               required:
-                - username
+                - email
                 - password
                 - name
               properties:
-                username:
+                email:
                   type: string
-                  example: pharmacy_001
+                  format: email
+                  example: pharmacy@example.com
                 password:
                   type: string
+                  format: password
                   example: secure_password
                 name:
                   type: string
@@ -36,6 +38,17 @@ paths:
       responses:
         '201':
           description: Pharmacy registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Pharmacy registered successfully
+                  role:
+                    type: string
+                    example: pharmacy
         '400':
           description: Pharmacy already exists
         '500':
@@ -53,14 +66,16 @@ paths:
             schema:
               type: object
               required:
-                - username
+                - email
                 - password
               properties:
-                username:
+                email:
                   type: string
-                  example: pharmacy_001
+                  format: email
+                  example: pharmacy@example.com
                 password:
                   type: string
+                  format: password
                   example: secure_password
       responses:
         '200':
@@ -70,9 +85,18 @@ paths:
               schema:
                 type: object
                 properties:
+                  message:
+                    type: string
+                    example: Login successful
                   token:
                     type: string
                     example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+                  role:
+                    type: string
+                    example: pharmacy
+                  name:
+                    type: string
+                    example: Pharmacy ABC
         '404':
           description: Pharmacy not found
         '401':
