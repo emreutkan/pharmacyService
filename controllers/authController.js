@@ -36,8 +36,13 @@ const pharmacyLoginHandler = async (req, res) => {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
+        // Include email in the token payload
         const token = jwt.sign(
-            { pharmacyId: pharmacy._id, role: pharmacy.role },
+            {
+                pharmacyId: pharmacy._id,
+                email: pharmacy.email, // Add email here
+                role: pharmacy.role,
+            },
             process.env.JWT_SECRET,
             { expiresIn: '1h' }
         );
@@ -52,6 +57,7 @@ const pharmacyLoginHandler = async (req, res) => {
         res.status(500).json({ message: 'Error logging in', error });
     }
 };
+
 
 
 module.exports = { pharmacyLoginHandler, pharmacyRegisterHandler };
